@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/skaji/Acme-Test.svg?branch=master)](https://travis-ci.org/skaji/Acme-Test)
-
 # NAME
 
 Acme::Test - Blah blah blah

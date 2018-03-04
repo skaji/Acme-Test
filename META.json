@@ -41,12 +41,6 @@
          }
       }
    },
-   "provides" : {
-      "Acme::Test" : {
-         "file" : "lib/Acme/Test.pm",
-         "version" : "0.002"
-      }
-   },
    "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
