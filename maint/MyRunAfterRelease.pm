@@ -32,8 +32,7 @@ around register_component => sub {
     my $version = $self->VERSION || 0;
     $self->log_debug([ 'online, %s v%s', $self->meta->name, $version ]);
 
-    my $find = sub { ref $_ eq "Dist::Zilla::Plugin::CopyFilesFromRelease" };
-    _inject  $self->zilla->plugins, $find, $self or die;
+    _inject  $self->zilla->plugins, sub { ref $_ eq "Dist::Zilla::Plugin::CopyFilesFromRelease" }, $self or die;
 
     my @dirty_files = ('dist.ini', 'Changes', 'META.json', 'README.md', "script.fatpack.pl");
     my $git_commit = Dist::Zilla::Plugin::Git::Commit->new({
@@ -43,7 +42,7 @@ around register_component => sub {
         plugin_name => "Dist::Zilla::Plugin::Git::Commit",
         zilla       => $section->sequence->assembler->zilla,
     });
-    _replace $self->zilla->plugins, $find, $git_commit or die;
+    _replace $self->zilla->plugins, sub { ref $_ eq "Dist::Zilla::Plugin::Git::Commit" }, $git_commit or die;
     return;
 };
 
