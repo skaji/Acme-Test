@@ -6,7 +6,7 @@ BEGIN {
 my %fatpacked;
 
 $fatpacked{"Acme/Test.pm"} = '#line '.(1+__LINE__).' "'.__FILE__."\"\n".<<'ACME_TEST';
-  package Acme::Test;use strict;use warnings;our$VERSION='0.005';1;
+  package Acme::Test;use strict;use warnings;our$VERSION='0.006';1;
 ACME_TEST
 
 s/^  //mg for values %fatpacked;
