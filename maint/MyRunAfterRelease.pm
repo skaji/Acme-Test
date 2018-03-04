@@ -3,11 +3,23 @@ package MyRunAfterRelease;
 use Moose;
 extends 'Dist::Zilla::Plugin::Run::AfterRelease';
 
+use Dist::Zilla::Plugin::Git::Commit;
+
 sub _inject {
     my ($array, $sub, $item) = @_;
     my ($i) = grep { local $_ = $array->[$_]; $sub->($_) } 0.. $#{$array};
     if (defined $i) {
         splice @$array, $i + 1, 0, $item;
+        return 1;
+    }
+    return;
+}
+
+sub _replace {
+    my ($array, $sub, $item) = @_;
+    my ($i) = grep { local $_ = $array->[$_]; $sub->($_) } 0.. $#{$array};
+    if (defined $i) {
+        splice @$array, $i, 1, $item;
         return 1;
     }
     return;
@@ -19,11 +31,19 @@ around register_component => sub {
     my $self = $class->plugin_from_config($name, $arg, $section);
     my $version = $self->VERSION || 0;
     $self->log_debug([ 'online, %s v%s', $self->meta->name, $version ]);
-    _inject
-        $self->zilla->plugins,
-        sub { ref $_ eq "Dist::Zilla::Plugin::CopyFilesFromRelease" },
-        $self,
-        or die "ERROR";
+
+    my $find = sub { ref $_ eq "Dist::Zilla::Plugin::CopyFilesFromRelease" };
+    _inject  $self->zilla->plugins, $find, $self or die;
+
+    my @dirty_files = ('dist.ini', 'Changes', 'META.json', 'README.md', "script.fatpack.pl");
+    my $git_commit = Dist::Zilla::Plugin::Git::Commit->new({
+        commit_msg => '%v',
+        allow_dirty => \@dirty_files,
+        allow_dirty_match => ['\.pm$'],
+        plugin_name => "Dist::Zilla::Plugin::Git::Commit",
+        zilla       => $section->sequence->assembler->zilla,
+    });
+    _replace $self->zilla->plugins, $find, $git_commit or die;
     return;
 };
 
