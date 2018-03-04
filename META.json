@@ -53,7 +53,7 @@
          "web" : "https://github.com/skaji/Acme-Test"
       }
    },
-   "version" : "0.004",
+   "version" : "0.005",
    "x_serialization_backend" : "Cpanel::JSON::XS version 4.01",
    "x_static_install" : 1
 }
